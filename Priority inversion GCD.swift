@@ -7,6 +7,8 @@
 
 import Foundation
 
+Priority inversion occurs when a higher-priority task is waiting for a lower-priority task to release a resource, but the lower-priority task cannot proceed because it’s blocked by another even lower-priority task. This can lead to performance issues or deadlocks in real-time systems, as the higher-priority task is unable to execute despite its urgency.
+                                                                        
 let queueHigh = DispatchQueue(label: "com.example.high", qos: .userInteractive)
 let queueLow = DispatchQueue(label: "com.example.low", qos: .background)
 

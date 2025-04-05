@@ -16,6 +16,62 @@ A classic example of a deadlock situation:
 1. Thread A locks **Resource 1** and waits for **Resource 2** to be released by Thread B.
 2. Thread B locks **Resource 2** and waits for **Resource 1** to be released by Thread A.
 3. Both threads are waiting for each other indefinitely.
+                                                                                
+let lockA = NSLock()
+let lockB = NSLock()
+
+// Thread 1
+DispatchQueue.global().async {
+    lockA.lock()
+    print("Thread 1 locked lockA")
+    sleep(1) // Simulate some work
+    lockB.lock()
+    print("Thread 1 locked lockB")
+    lockB.unlock()
+    lockA.unlock()
+}
+
+// Thread 2
+DispatchQueue.global().async {
+    lockB.lock()
+    print("Thread 2 locked lockB")
+    sleep(1) // Simulate some work
+    lockA.lock()
+    print("Thread 2 locked lockA")
+    lockA.unlock()
+    lockB.unlock()
+}
+
+#####   solution
+
+let lockA = NSLock()
+let lockB = NSLock()
+
+func acquireLocksInOrder() {
+    lockA.lock()
+    lockB.lock()
+}
+
+func releaseLocksInOrder() {
+    lockB.unlock()
+    lockA.unlock()
+}
+
+// Thread 1
+DispatchQueue.global().async {
+    acquireLocksInOrder()
+    print("Thread 1 acquired locks")
+    // Perform work here
+    releaseLocksInOrder()
+}
+
+// Thread 2
+DispatchQueue.global().async {
+    acquireLocksInOrder()
+    print("Thread 2 acquired locks")
+    // Perform work here
+    releaseLocksInOrder()
+}
 
 ### How to Avoid Deadlocks Using Modern Concurrency in Swift
 
